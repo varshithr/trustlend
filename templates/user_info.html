@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #fff; }
+        .header { background: #ff6600; color: #fff; padding: 10px; }
+        .container { display: flex; flex-wrap: wrap; margin: 20px; }
+        .sidebar, .main, .rightbar { padding: 15px; background: #f7f7f7; margin: 10px; border-radius: 5px; }
+        .sidebar { width: 30%; }
+        .main { width: 70%; }
+        .rightbar { width: 25%; }
+        .section { margin-bottom: 20px; }
+        h2 { color: #ff6600; }
+        .btn { background: #ff6600; color: #fff; border: none; padding: 8px 16px; cursor: pointer; border-radius: 3px; }
+        .calendar { background: #fff; padding: 10px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 5px; text-align: center; }
+        th { background: #ff6600; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MTB Dashboard</h1><span style="float: right;margin-top: -50px;">Welcome, {{ user_details.Name }} (****{{ user_details.Mobile|slice:"-4:" }})<button type="submit" formaction="{% url 'index' %}" class="btn">Logout</button></span>            
+    </div>
+    <div class="container">
+        <div style="width: 100%; margin-bottom: 24px;">
+            <h2 style="display:inline-block; margin-right: 16px;">User Profile Overview</h2>
+            <form action="{% url 'credit_score' %}" method="get" style="display:inline;">
+            <button class="btn" style="vertical-align: middle;margin-left: 100px;background-color: blue;">Check Eligibilty Criteria >></button>
+            </form>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                    <strong>Personal Details</strong><br>
+                    <span><i class="fa fa-user" style="color:#ff6600;"></i> Age: {{ user_details.age }}</span><br>
+                    <span><i class="fa fa-venus-mars" style="color:#ff6600;"></i> Gender: {{ user_details.gender }}</span><br>
+                    <span><i class="fa fa-map-marker-alt" style="color:#ff6600;"></i> Location: {{ user_details.location }}</span><br>
+                    <span><i class="fa fa-briefcase" style="color:#ff6600;"></i> Employment: {{ user_details.employment_status }}</span><br>
+                    <span><i class="fa fa-id-card" style="color:#ff6600;"></i> Aadhaar: ****{{ user_details.aadhaar_number|slice:"-4:" }}</span>
+                </div>
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                    <strong>Financial Summary</strong><br>
+                    <span><i class="fa fa-money-bill-wave" style="color:#ff6600;"></i> Monthly Income: ₹{{ user_details.monthly_income }}</span><br>
+                    <span><i class="fa fa-credit-card" style="color:#ff6600;"></i> Monthly Expense: ₹{{ user_details.monthly_expense }}</span><br>
+                    <span><i class="fa fa-exchange-alt" style="color:#ff6600;"></i> Transactions: {{ user_details.transactions_count }}</span>
+                </div>
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                    <strong>Loan Status</strong><br>
+                    <span><i class="fa fa-university" style="color:#ff6600;"></i> Pre-existing Loans: {{ user_details.pre_existing_loans }}</span><br>
+                    <span><i class="fa fa-exclamation-triangle" style="color:#ff6600;"></i> Loan Payment Defaulter: {{ user_details.loan_payment_defaulter }}</span><br>
+                    <span><i class="fa fa-check-circle" style="color:#ff6600;"></i> Closed Loans: {{ user_details.closed_loans }}</span><br>
+                    <span><i class="fa fa-clock" style="color:#ff6600;"></i> Closed On Time: {{ user_details.closed_on_time }}</span><br>
+                    <span><i class="fa fa-rupee-sign" style="color:#ff6600;"></i> Loan Prepayment Made: {{ user_details.loan_prepayment_made }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="section">
+                <h2>Bank Account</h2>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    {% for bank in user_details.accounts %}
+                    <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 16px; min-width: 180px; flex: 1 0 180px; margin-top: 5px;">
+                        <strong>{{ bank.name }}</strong><br>
+                        <span>Account: {{ bank.account_number }}</span><br>
+                        <span>Type: {{ bank.account_type }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="rightbar">
+            <div class="section">
+                <h2>Loans Overview</h2>
+                <canvas id="loansPieChart" width="200" height="200"></canvas>
+                <div style="margin-top:10px;">
+                    <span id="openLoansHighlight" style="color:#ff6600; cursor:pointer;" 
+                        onmouseover="this.style.backgroundColor='#ffe0cc';" 
+                        onmouseout="this.style.backgroundColor='';"
+                        onclick="showLoanDetails('open');">
+                        ● Open Loans: {{ user_details.pre_existing_loans }}
+                    </span><br>
+                    <span id="closedLoansHighlight" style="color:#ccc; cursor:pointer;"
+                        onmouseover="this.style.backgroundColor='#f0f0f0';"
+                        onmouseout="this.style.backgroundColor='';"
+                        onclick="showLoanDetails('closed');">
+                        ● Closed Loans: {{ user_details.closed_loans }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- Loan Details section is hidden by default -->
+        <div class="sidebar" id="loanDetailsSection" style="display: none;">
+            <div class="section">
+                <h2>Loan Details</h2>
+                <div style="display: none;" id = "openLoansSection">
+      
+                <strong>Open Loans</strong>
+                <ul style="margin-bottom: 12px;" >
+                    {% for loan in user_details.loans %}
+                        {% if loan.status == 'Open'%}
+                        <li>
+                            ₹{{ loan.amount }} (Due: {{ loan.due_date }}) - {{ loan.interest_rate }}% interest
+                        </li>
+                        {% endif %}
+                    {% empty %}
+                        <li>No open loans</li>
+                    {% endfor %}
+                </ul>
+                </div>
+                <div style="display: none;" id="closedLoansSection">
+                <strong>Closed Loans</strong>
+                <ul>
+                    {% for loan in user_details.loans %}
+                        {% if loan.status == 'Closed'%}
+                        <li>
+                            ₹{{ loan.amount }} (Due: {{ loan.due_date }}) - {{ loan.interest_rate }}% interest
+                        </li>
+                        {% endif %}
+                    {% empty %}
+                        <li>No open loans</li>
+                    {% endfor %}
+                </ul>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript"
+src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+</script>
+    
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('loansPieChart').getContext('2d');
+            const openLoans = {{ user_details.pre_existing_loans|default:0}};
+            const closedLoans = {{ user_details.closed_loans|default:0 }};
+            new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Open Loans', 'Closed Loans'],
+                datasets: [{
+                data: [openLoans, closedLoans],
+                backgroundColor: ['#ff6600', '#ccc'],
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                legend: {
+                    display: false
+                }
+                }
+            }
+            });
+
+function showLoanDetails(type) {
+                var section = document.getElementById('loanDetailsSection');
+                $("#loanDetailsSection").show()
+                if (type === 'open') {
+                    $("#openLoansSection").show();
+                    $("#closedLoansSection").hide();
+                }
+                else if (type === 'closed') {
+                    $("#openLoansSection").hide();
+                    $("#closedLoansSection").show();
+                }
+                else{
+                    $("#openLoansSection").hide();
+                    $("#closedLoansSection").hide();
+                }
+            }
+            
+        </script>
+        
+</body>
+</html>

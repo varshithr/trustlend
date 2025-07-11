@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #fff; }
+        .header { background: #ff6600; color: #fff; padding: 10px; }
+        .dashboard-table {
+            width: 95%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .dashboard-table th, .dashboard-table td {
+            border: 1px solid #bbb;
+            padding: 18px 10px;
+            vertical-align: top;
+            text-align: center;
+        }
+        .dashboard-table th {
+            background: #fff;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+            border-bottom: 2px solid #ff6600;
+        }
+        .trust-score-circle {
+            width: 120px;
+            height: 120px;
+            background: #3a7bd5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px auto;
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            flex-direction: column;
+        }
+        .trust-score-label {
+            font-size: 18px;
+            color: #fff;
+            font-weight: normal;
+        }
+        .section-title {
+            color: #7c4700;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-decoration: underline;
+        }
+        .section-value {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .address-title {
+            color: #7c4700;
+            font-weight: bold;
+            font-size: 16px;
+            text-decoration: underline;
+        }
+        .address-value {
+            color: #333;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .liability-title {
+            color: #7c4700;
+            font-weight: bold;
+            font-size: 16px;
+            text-decoration: underline;
+        }
+        .liability-value {
+            color: #333;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MTB Dashboard</h1><span style="float: right;margin-top: -50px;">Logout</span>
+
+    </div>
+    <table class="dashboard-table">
+        <tr>
+            <th>TOTAL ASSETS VALUE</th>
+            <th>TRUST SCORE</th>
+            <th>TOTAL SAVINGS ACCOUNT BALANCE</th>
+            <th>TOTAL ASSETS VALUE</th>
+            <th>TOTAL LIABILITIES</th>
+        </tr>
+        <tr>
+            <td>
+                <div class="section-title">Farm Land Value</div>
+                <div class="section-value">1500000.00</div>
+                <div class="section-title">Vehicle Value</div>
+                <div class="section-value">125000</div>
+                <div class="section-title">Gold Ornament</div>
+                <div class="section-value">126000</div>
+            </td>
+            <td>
+                <div class="trust-score-circle">
+                    256
+                    <span class="trust-score-label">Points</span>
+                </div>
+            </td>
+            <td>
+                <div class="section-title">Sum of 4 Banks</div>
+                <div class="section-value">125000.25</div>
+                <div class="address-title">Current Address</div>
+                <div class="address-value">
+                    1/2 JP STREET<br>
+                    MAIN ROAD<br>
+                    KARDA-515789
+                </div>
+                <div class="address-title">Permanent Address</div>
+                <div class="address-value">
+                    MOTINAGAR<br>
+                    5<sup>th</sup> LANE,152<br>
+                    KARDA-515789
+                </div>
+            </td>
+            <td>
+                <div class="section-value" style="font-size:22px;font-weight:bold;">1750000.75</div>
+            </td>
+            <td>
+                <div class="liability-title">Crop Loan</div>
+                <div class="liability-value">18000.00</div>
+                <div class="liability-title">Vehicle Loan</div>
+                <div class="liability-value">48000</div>
+                <div class="liability-title">Personal Loan</div>
+                <div class="liability-value">25000</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Money Trust Bag - MTB</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f8fb;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 420px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+            padding: 32px 28px 28px 28px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .logo-circle {
+            background: orange;
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 2px 8px rgba(46, 134, 222, 0.18);
+        }
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color:orange;
+            letter-spacing: 1px;
+        }
+        h2 {
+            text-align: center;
+            color: #222f3e;
+            margin-bottom: 10px;
+        }
+        p {
+            text-align: center;
+            color: #576574;
+            margin-bottom: 28px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        label {
+            font-weight: 500;
+            color: #222f3e;
+        }
+        input[type="text"], input[type="email"], input[type="number"] {
+            padding: 10px;
+            border: 1px solid #c8d6e5;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f8fafc;
+        }
+        button {
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #145fa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-circle">MTB</div>
+            <div class="logo-text">Money Trust Bank</div>
+        </div>
+        <h2>Welcome to Money Trust Bank</h2>
+        <p>Empowering your financial journe. where your trust meets high approval rates.</p>
+        <form id="mobileForm">
+            <label for="mobile">Mobile Number:</label>
+            <input type="text" id="mobile" name="mobile" placeholder="Please provide ADHAR linked Mobile Number." required>
+            <button type="button" name="send_otp" id="send_otp">Get OTP</button>
+        </form>
+        <div id="verify_section" style="display: none;"> 
+        <form method="post" style="margin-top: 20px;">
+                <label for="otp">Enter OTP:</label>
+                <div id="otp-timer" style="color:#2e86de; font-weight:500; margin-bottom:8px;">Resend OTP in <span id="timer">30</span> seconds</div>
+                <button type="button" id="resend_otp" style="display:none; margin-bottom:10px;">Resend OTP</button>
+                <input type="text" id="otp" name="otp" placeholder="Enter the OTP sent to your mobile." required>
+                <button type="button" name="verify_otp" id="verify_otp">Verify OTP</button>
+        </form>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+     <script>
+    $("#send_otp").click(function(e){
+        console.log("here")
+            const mobile = document.getElementById('mobile').value;
+            if (!mobile) {
+                alert("Please enter a valid mobile number.");
+                return;
+            }
+            var mobile_num = { 'send_otp':'send_otp','mobile': mobile }
+            console.log(mobile_num)
+            $.ajax({
+                url: "{% url 'index' %}",
+                type: "POST",
+                data: JSON.stringify(mobile_num),
+                enctype: 'multipart/form-data',
+                success: function(data) {
+                    alert(data.message || "OTP sent successfully!");
+                    $("#verify_section").show()
+                },
+                error: function(xhr, status, error) {
+                    alert("Error sending OTP.");
+                }
+            });
+                    
+    })
+
+    $("#verify_otp").click(function(e){
+        console.log("here")
+            const otp = document.getElementById('otp').value;
+            if (!otp) {
+                alert("Please enter a valid mobile number.");
+                return;
+            }
+            var otp_num = { 'verify_otp':'verify_otp','otp': otp }
+            console.log(otp_num)
+            $.ajax({
+                url: "{% url 'index' %}",
+                type: "POST",
+                data: JSON.stringify(otp_num),
+                enctype: 'multipart/form-data',
+                success: function(data) {
+                    if(data.message == 'Error'){
+                        alert("Please provide valid OTP")
+                    }
+                    else{
+                        alert(data.message || "OTP sent successfully!");
+                        window.location.href = "{% url 'user_info' %}";
+                    }
+                    
+                },
+                error: function(xhr, status, error) {
+                    alert("Error sending OTP.");
+                }
+            });
+                    
+    })
+
+    var timerInterval;
+                    function startOTPTimer(duration) {
+                        var timer = duration;
+                        $("#otp-timer").show();
+                        $("#timer").text(timer);
+                        $("#send_otp").hide();
+                        if (timer <= 0) {
+                            clearInterval(timerInterval);
+                            $("#otp-timer").hide();
+
+                        }
+                        clearInterval(timerInterval);
+                        timerInterval = setInterval(function () {
+                            timer--;
+                            $("#timer").text(timer);
+                            if (timer <= 0) {
+                                clearInterval(timerInterval);
+                                $("#otp-timer").hide();
+                                $("#send_otp").show();
+                            }
+                        }, 1000);
+                    }
+
+                    // Start timer when OTP section is shown
+                    $("#send_otp").click(function() {
+                        setTimeout(function() { // Wait for section to show
+                            startOTPTimer(10);
+                        }, 100);
+                    });
+
+                    // Resend OTP button logic
+                    $("#resend_otp").click(function() {
+                        $("#send_otp").click();
+                        startOTPTimer(30);
+                    });
+        </script>
