@@ -5,137 +5,119 @@
     <style>
         body { font-family: Arial, sans-serif; background: #fff; }
         .header { background: #ff6600; color: #fff; padding: 10px; }
-        .dashboard-table {
-            width: 95%;
-            margin: 30px auto;
-            border-collapse: collapse;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .dashboard-table th, .dashboard-table td {
-            border: 1px solid #bbb;
-            padding: 18px 10px;
-            vertical-align: top;
-            text-align: center;
-        }
-        .dashboard-table th {
-            background: #fff;
-            color: #333;
-            font-weight: bold;
-            font-size: 16px;
-            border-bottom: 2px solid #ff6600;
-        }
-        .trust-score-circle {
-            width: 120px;
-            height: 120px;
-            background: #3a7bd5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px auto;
-            color: #fff;
-            font-size: 32px;
-            font-weight: bold;
-            flex-direction: column;
-        }
-        .trust-score-label {
-            font-size: 18px;
-            color: #fff;
-            font-weight: normal;
-        }
-        .section-title {
-            color: #7c4700;
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 5px;
-            text-decoration: underline;
-        }
-        .section-value {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .address-title {
-            color: #7c4700;
-            font-weight: bold;
-            font-size: 16px;
-            text-decoration: underline;
-        }
-        .address-value {
-            color: #333;
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-        .liability-title {
-            color: #7c4700;
-            font-weight: bold;
-            font-size: 16px;
-            text-decoration: underline;
-        }
-        .liability-value {
-            color: #333;
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
+        .container { display: flex; flex-wrap: wrap; margin: 20px; }
+        .sidebar, .main, .rightbar { padding: 15px; background: #f7f7f7; margin: 10px; border-radius: 5px; }
+        .sidebar { width: 100%; }
+        .main { width: 70%; }
+        .rightbar { width: 25%; }
+        .section { margin-bottom: 20px; }
+        h2 { color: #ff6600; }
+        .btn { background: #ff6600; color: #fff; border: none; padding: 8px 16px; cursor: pointer; border-radius: 3px; }
+        .calendar { background: #fff; padding: 10px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 5px; text-align: center; }
+        th { background: #ff6600; color: #fff; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>MTB Dashboard</h1><span style="float: right;margin-top: -50px;">Logout</span>
-
+        <h1>MTB Dashboard</h1><span style="float: right;margin-top: -50px;"><button type="submit" formaction="{% url 'index' %}" class="btn">Logout</button></span>            
     </div>
-    <table class="dashboard-table">
-        <tr>
-            <th>TOTAL ASSETS VALUE</th>
-            <th>TRUST SCORE</th>
-            <th>TOTAL SAVINGS ACCOUNT BALANCE</th>
-            <th>TOTAL ASSETS VALUE</th>
-            <th>TOTAL LIABILITIES</th>
-        </tr>
-        <tr>
-            <td>
-                <div class="section-title">Farm Land Value</div>
-                <div class="section-value">1500000.00</div>
-                <div class="section-title">Vehicle Value</div>
-                <div class="section-value">125000</div>
-                <div class="section-title">Gold Ornament</div>
-                <div class="section-value">126000</div>
-            </td>
-            <td>
-                <div class="trust-score-circle">
-                    256
-                    <span class="trust-score-label">Points</span>
+    <div class="container">
+        <div style="width: 100%; margin-bottom: 24px;">
+            <h2 style="display:inline-block; margin-right: 16px;">Credit Score Analysis</h2>
+            <form action="{% url 'credit_score' %}" method="get" style="display:inline;">
+            </form>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                    <div style="margin-left: 100px;">
+                    <canvas id="creditScoreMeter" width="180" height="100"></canvas>    
+                    </div>            
                 </div>
-            </td>
-            <td>
-                <div class="section-title">Sum of 4 Banks</div>
-                <div class="section-value">125000.25</div>
-                <div class="address-title">Current Address</div>
-                <div class="address-value">
-                    1/2 JP STREET<br>
-                    MAIN ROAD<br>
-                    KARDA-515789
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                        <strong>Credit Worthiness</strong><br>
+                        <div style="align-items: center;text-align: center;margin-top: 30px;">
+                        <span style="font-size: 2em;color: blue;" id="credit_worthiness"></span>
+                        </div>
                 </div>
-                <div class="address-title">Permanent Address</div>
-                <div class="address-value">
-                    MOTINAGAR<br>
-                    5<sup>th</sup> LANE,152<br>
-                    KARDA-515789
+                <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px;">
+                    <strong>Credit Details</strong><br>
+                        <div style="color: blue;float: left;margin-top: 20px;">
+                        {{credit_reason}}
+                        </div>
                 </div>
-            </td>
-            <td>
-                <div class="section-value" style="font-size:22px;font-weight:bold;">1750000.75</div>
-            </td>
-            <td>
-                <div class="liability-title">Crop Loan</div>
-                <div class="liability-value">18000.00</div>
-                <div class="liability-title">Vehicle Loan</div>
-                <div class="liability-value">48000</div>
-                <div class="liability-title">Personal Loan</div>
-                <div class="liability-value">25000</div>
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="section">
+                <h2>Bank Details</h2>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    {% for bank, details in registered_banks.items %}
+                        <div style="flex: 1 1 300px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-weight: bold; font-size: 1.1em;">{{ bank }}</div>
+                                <div style="color: #555;">Interest Rate: <span style="color: #ff6600;">{{ details }}%</span></div>
+                            </div>
+                            <button type="submit" class="btn">Enquire Now</button>
+                        </div>
+                    {% endfor %}
+        
+                </div>
+            </div>
+        </div>
+        
+        
+        <script type="text/javascript"
+src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+</script>
+    
+        <script>
+                                    document.addEventListener("DOMContentLoaded", function() {
+                                        const score = {{ credit_score|default:0 }};
+                                        const ctxMeter = document.getElementById('creditScoreMeter').getContext('2d');
+                                        // Draw meter background (semi-circle)
+                                        ctxMeter.clearRect(0, 0, 180, 100);
+                                        ctxMeter.beginPath();
+                                        ctxMeter.arc(90, 100, 80, Math.PI, 2 * Math.PI, false);
+                                        ctxMeter.lineWidth = 18;
+                                        ctxMeter.strokeStyle = '#eee';
+                                        ctxMeter.stroke();
+
+                                        // Draw colored arc based on score
+                                        let percent = Math.max(0, Math.min(score / 900, 1)); // assuming max score 900
+                                        let endAngle = Math.PI + percent * Math.PI;
+                                        ctxMeter.beginPath();
+                                        ctxMeter.arc(90, 100, 80, Math.PI, endAngle, false);
+                                        ctxMeter.lineWidth = 18;
+                                        ctxMeter.strokeStyle = score > 750 ? '#2ecc40' : (score > 600 ? '#ffcc00' : '#ff6600');
+                                        ctxMeter.stroke();
+
+                                        // Draw score text
+                                        ctxMeter.font = "bold 22px Arial";
+                                        ctxMeter.fillStyle = "#333";
+                                        ctxMeter.textAlign = "center";
+                                        ctxMeter.fillText(score, 90, 80);
+                                        ctxMeter.font = "12px Arial";
+                                        ctxMeter.fillStyle = "#888";
+                                        ctxMeter.fillText("Credit Score", 90, 95);
+                                    });
+
+var worthiness = "{{credit_worthiness}}"
+console.log(worthiness)
+if(worthiness == 'Excellent'){
+    document.getElementById("credit_worthiness").innerHTML = `<span style="color:#2e7d32">`+worthiness+`</span>`
+}
+else if(worthiness == 'Very Good'){
+    document.getElementById("credit_worthiness").innerHTML = `<span style="color:#388e3c">`+worthiness+`</span>`
+}
+else if(worthiness == 'Fair'){
+    document.getElementById("credit_worthiness").innerHTML = `<span style="color:#f9a825">`+worthiness+`</span>`
+}
+else if(worthiness == 'Low'){
+    document.getElementById("credit_worthiness").innerHTML = `<span style="color:#d32f2f">`+worthiness+`</span>`
+}
+</script>
+        
 </body>
 </html>
