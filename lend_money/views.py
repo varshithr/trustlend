@@ -44,13 +44,13 @@ def index(request):
             return JsonResponse({"message": "OTP sent!"},status=200)
         elif 'verify_otp' in ui_input_dict.keys():
             response = verify_otp(request, ui_input_dict['otp'])
-            response = 'Success'
+            # response = 'Success'
             return JsonResponse({"message": response},status = 200)
     return render(request, "user_form.html")
 
 def user_info(request):
 
-    genders = ['Male', 'Female', 'Other']
+    genders = ['Male', 'Female']
     employment_status = ['Employed', 'Unemployed']
     job_types = ['Full-time', 'Part-time', 'Freelancer', 'Contract']
     mobile_brands = ['Android', 'iOS']
@@ -170,8 +170,31 @@ def credit_score(request):
     credit_reason = response['credit_reason']
     credit_score = max(300, min(credit_score, 900))
     interest_rate = round(9 + ((900 - credit_score) / (900 - 300)) * (20 - 9),2)
-    registered_banks = {'kotak Mahendra Bank':round(interest_rate+0.98,2),'State Bank Of India':round(interest_rate+0.5,2),'HDFC Bank':round(interest_rate+0.2,2),'ICICI Bank':round(interest_rate+0.3,2),
-                        'CO-operative Bank':round(interest_rate+1.25,2),'Anand CO-Operative Bank':round(interest_rate+1.5,2),'Punjab National Bank':round(interest_rate+0.75,2),'Grameena Bank':round(interest_rate+1.4,2),'Canara Bank':round(interest_rate+0.9,2)}
+    banks_with_rates = {
+        'kotak Mahendra Bank': round(interest_rate + random.uniform(0,1), 2),
+        'State Bank Of India': round(interest_rate + random.uniform(0,1), 2),
+        'HDFC Bank': round(interest_rate + random.uniform(0,1), 2),
+        'ICICI Bank': round(interest_rate + random.uniform(0,1), 2),
+        'CO-operative Bank': round(interest_rate + random.uniform(1,2), 2),
+        'Anand CO-Operative Bank': round(interest_rate + random.uniform(1,2), 2),
+        'Punjab National Bank': round(interest_rate + random.uniform(0,1), 2),
+        'Grameena Bank': round(interest_rate + random.uniform(1,2), 2),
+        'Canara Bank': round(interest_rate + random.uniform(0,1), 2)
+    }
+    registered_banks = dict(sorted(banks_with_rates.items(), key=lambda item: item[1]))
+    if credit_worthiness == 'Excellent':
+        referal_score = 9
+    elif credit_worthiness == 'Very Good':
+        referal_score = 7.5
+    elif credit_worthiness == 'Fair':
+        referal_score = 5
+    elif credit_worthiness == 'Low':
+        referal_score = 3
     context = {
-        'credit_score': credit_score,'credit_worthiness':credit_worthiness,'credit_reason':credit_reason,'registered_banks':registered_banks}
+        'credit_score': credit_score,
+        'credit_worthiness': credit_worthiness,
+        'credit_reason': credit_reason,
+        'registered_banks': registered_banks,
+        'referal_score': referal_score
+    }
     return render(request,'credit_score.html',context=context)
